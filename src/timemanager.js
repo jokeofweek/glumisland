@@ -121,12 +121,44 @@ TimeManager.prototype.toTimeStamp = function(days, hours, minutes) {
   return (days * 3600) + (hours * 60) + minutes;
 };
 
+/**
+ * Schedules an event to take place at a given time point.
+ * @param  {int}   days    the number of days.
+ * @param  {int}   hours   the number of hours.
+ * @param  {int}   minutes the number of minutes.
+ * @param  {Function} fn   The event which should be executed.
+ */
 TimeManager.prototype.schedule = function(days, hours, minutes, fn) {
   this.listenOnce('time-' + this.toTimeStamp(days, hours, minutes), fn);
 };
 
-TimeManager.prototype.scheduleInterval = function(dayInterval, hoursInterval, minutesInterval) {
-  // body...
+/**
+ * Schedules an event to take place at a given time point relative to
+ * the current time.
+ * @param  {int}   days    How many days in the future.
+ * @param  {int}   hours   How many hours in the future.
+ * @param  {int}   minutes How many minutes in the future.
+ * @param  {Function} fn      The event to be executed.
+ */
+TimeManager.prototype.scheduleRelative = function(days, hours, minutes, fn) {
+  this.listenOnce('time-' + this.toTimeStamp(this._days + days, this._hours + hours,
+      this._minutes + minutes), fn);
+};
+
+/**
+ * Schedule an event to take place repeatedly at a given interval.
+ * @param  {int}   daysInterval    How many days in between.
+ * @param  {int}   hoursInterval   How many hours in betwen.
+ * @param  {int}   minutesInterval How many minutes in the future.  
+ * @param  {Function} fn              The event to be executed every interval.
+ */
+TimeManager.prototype.scheduleInterval = function(daysInterval, hoursInterval, minutesInterval, fn) {
+  var self = this;
+  var intervalFn = function() {
+    fn();
+    self.scheduleRelative(daysInterval, hoursInterval, minutesInterval, intervalFn);
+  };
+  self.scheduleRelative(daysInterval, hoursInterval, minutesInterval, intervalFn);
 };
 
 Game.TimeManager = TimeManager;
