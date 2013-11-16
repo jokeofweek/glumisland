@@ -42,7 +42,12 @@ window.Game = {
    */
   getStoryManager: function() {
     return this._storyManager;
-  }
+  },
+  /**
+   * Namespace for UI classes and functions
+   * @type {Object}
+   */
+  UI: {}
 }
 
 
