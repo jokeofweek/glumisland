@@ -13,6 +13,7 @@ function TimeManager(backgroundElement) {
   this._hours = 0;
   this._minutes = 0;
   this._timer = null;
+  this._scheduledEvents = {};
   this._backgroundElement = backgroundElement;
 };
 TimeManager.extend(Game.Observable);
@@ -44,7 +45,6 @@ TimeManager.prototype.tick = function() {
     this._hours++;
     this._minutes = 0;
     hourChange = true;
-    this.updateHour();
     if (this._hours == 24) {
       this._hours = 0;
       this._days++;
@@ -52,8 +52,12 @@ TimeManager.prototype.tick = function() {
     }
   }
 
+  // Raise the time event
+  this.raise('time-' + this.toTimeStamp(this._days, this._hours, this._minutes));
+
   // Raise events on day and hour change
   if (hourChange) {
+    this._updateHour();
     this.raise('hourChange');
   }
   if (dayChange) {
@@ -61,8 +65,8 @@ TimeManager.prototype.tick = function() {
   }
 };
 
-TimeManager.prototype.updateHour = function() {
-  Game.log('updateHour - ' + this._hours);
+TimeManager.prototype._updateHour = function() {
+  Game.log('_updateHour - ' + this._hours);
 
   if (this._hours == DAWN_TIME) {
     Game.getStoryManager().record('You see the sun start to come up in the distance.');
@@ -104,6 +108,25 @@ TimeManager.prototype.describe = function() {
   } else {
     return 'evening';
   }
+};
+
+/**
+ * Generated a timestamp for a given timepoint in the game.
+ * @param  {int} days    The number of days.
+ * @param  {int} hours   The number of hours.
+ * @param  {int} minutes The number of minutes.
+ * @return {int}         A timestamp for that time point.
+ */
+TimeManager.prototype.toTimeStamp = function(days, hours, minutes) {
+  return (days * 3600) + (hours * 60) + minutes;
+};
+
+TimeManager.prototype.schedule = function(days, hours, minutes, fn) {
+  this.listenOnce('time-' + this.toTimeStamp(days, hours, minutes), fn);
+};
+
+TimeManager.prototype.scheduleInterval = function(dayInterval, hoursInterval, minutesInterval) {
+  // body...
 };
 
 Game.TimeManager = TimeManager;
