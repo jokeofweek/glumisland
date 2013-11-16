@@ -1,6 +1,10 @@
 (function() {
 "use strict";
 
+/**
+ * This cass represents an observable value. It has a standard getter and setter
+ * and listeners can register to be updated when the value changes.
+ */
 function Value() {
   this._value = null;
   this._listeners = [];
@@ -12,6 +16,7 @@ Value.prototype.get = function() {
 
 Value.prototype.set = function(value) {
   this._value = value;
+  this.notify();
 };
 
 Value.prototype.listen = function(listener) {
