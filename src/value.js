@@ -19,7 +19,11 @@ Value.prototype.get = function() {
 Value.prototype.set = function(value) {
   this._value = value;
   this.raise('change', value);
-};  
+};
+
+Value.prototype.toString = function() {
+  return this._value;
+};
 
 Game.Value = Value;
 })();

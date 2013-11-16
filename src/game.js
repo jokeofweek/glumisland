@@ -1,13 +1,12 @@
 (function(window) {
 "use strict";
 
-var MILLIS_PER_MINUTE = 50;
-
 window.Game = {
   _storyElement: null,
   _levelElement: null,
   _ruleManager: null,
   _storyManager: null,
+  _timeManager: null,
   _state: null,
   /**
    * Puts the game in the starting state.
@@ -26,6 +25,10 @@ window.Game = {
     // Set up the managers
     this._storyManager = new Game.StoryManager(this._storyElement);
     this._ruleManager = new Game.RuleManager();
+    this._timeManager = new Game.TimeManager($('#story-container'));
+
+    // Start the time manager timer!
+    this._timeManager.start(0, 8, 0);
 
     // Set up the game state
     this._state = new Game.State();
@@ -44,6 +47,12 @@ window.Game = {
    */
   getStoryManager: function() {
     return this._storyManager;
+  },
+  /**
+   * @return {Game.TimeManager} The time manager for the current game.
+   */
+  getTimeManager: function() {
+    return this._timeManager;
   },
   /**
    * Namespace for UI classes and functions

@@ -19,7 +19,9 @@ Camp.prototype.enter = function() {
 };
 
 Camp.prototype.handleFirstEnter = function() {
-  Game.getStoryManager().record("You groggily open your eyes and realize you're on a beach. You're not sure where you are.");
+  Game.getStoryManager().record(
+    String.format("You groggily open your eyes and realize you're on a beach. You're not sure where you are. It seems to be %d.",
+        Game.getTimeManager()));
 };
 
 Game.Areas.Camp = new Camp();
