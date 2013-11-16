@@ -15,10 +15,28 @@ function Observable() {
  * @param  {function} listener A function to be called when this object raises events.
  */
 Observable.prototype.listen = function(event, listener) {
+  this._internalListen(event, listener, false);
+};
+
+/**
+ * Adds a listener to this object. This listener will be called once and then
+ * removed.
+ *   
+ * @param {string} event The event to listen for.
+ * @param  {function} listener A function to be called when this object raises events.
+ */
+Observable.prototype.listenOnce = function(event, listener) {
+  this._internalListen(event, listener, true);
+};
+
+Observable.prototype._internalListen = function(event, listener, once) {
   if (!this._listeners[event]) {
     this._listeners[event] = [];
   }
-  this._listeners[event].push(listener);
+  this._listeners[event].push({
+    listener: listener,
+    once: once
+  });
 };
 
 /**
@@ -31,9 +49,20 @@ Observable.prototype.raise = function(event, arg) {
   if (!this._listeners[event]) {
     return;
   }
-  this._listeners[event].forEach(function(listener) {
-    listener.call(listener, arg);
-  });
+
+  for (var i = 0; i < this._listeners[event].length; i++) {
+    this._listeners[event][i].listener.call(null, arg);
+    // Remove the listener if it was marked for listening only once.
+    if (this._listeners[event][i].once) {
+      this._listeners[event].splice(i, 1);
+      i--;
+    }
+  }
+
+  // Delete the event if there are no keys left
+  if (this._listeners[event].length == 0) {
+    delete this._listeners[event];
+  }
 };
 
 Game.Observable = Observable;
