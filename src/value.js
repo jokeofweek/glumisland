@@ -18,7 +18,7 @@ Value.prototype.get = function() {
 
 Value.prototype.set = function(value) {
   this._value = value;
-  this.notify(value);
+  this.raise('change', value);
 };  
 
 Game.Value = Value;

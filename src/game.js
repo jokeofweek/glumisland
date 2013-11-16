@@ -1,6 +1,8 @@
 (function(window) {
 "use strict";
 
+var MILLIS_PER_MINUTE = 50;
+
 window.Game = {
   _storyElement: null,
   _levelElement: null,
